@@ -2,86 +2,66 @@ import streamlit as st
 
 st.set_page_config(page_title="Calculator", page_icon="🧮")
 
-st.title("🧮 Calculator")
-
-# Initialize display
+# Initialize session state
 if "expression" not in st.session_state:
     st.session_state.expression = ""
 
-# Display screen
-st.text_input(
-    "Display",
-    value=st.session_state.expression,
-    disabled=True
-)
-
-# Function for button clicks
+# Function to handle button presses
 def press(value):
     st.session_state.expression += value
 
-# Row 1
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    if st.button("7"):
-        press("7")
-with col2:
-    if st.button("8"):
-        press("8")
-with col3:
-    if st.button("9"):
-        press("9")
-with col4:
-    if st.button("/"):
-        press("/")
+# CSS Styling
+st.markdown("""
+<style>
+div.stButton > button {
+    width: 100%;
+    height: 70px;
+    font-size: 28px;
+    font-weight: bold;
+    border-radius: 15px;
+    background-color: #2E86C1;
+    color: white;
+}
 
-# Row 2
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    if st.button("4"):
-        press("4")
-with col2:
-    if st.button("5"):
-        press("5")
-with col3:
-    if st.button("6"):
-        press("6")
-with col4:
-    if st.button("*"):
-        press("*")
+div.stButton > button:hover {
+    background-color: #1B4F72;
+    color: white;
+}
 
-# Row 3
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    if st.button("1"):
-        press("1")
-with col2:
-    if st.button("2"):
-        press("2")
-with col3:
-    if st.button("3"):
-        press("3")
-with col4:
-    if st.button("-"):
-        press("-")
+input {
+    text-align: right !important;
+    font-size: 32px !important;
+    font-weight: bold !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
-# Row 4
-col1, col2, col3, col4 = st.columns(4)
-with col1:
-    if st.button("0"):
-        press("0")
-with col2:
-    if st.button("."):
-        press(".")
-with col3:
-    if st.button("="):
-        try:
-            st.session_state.expression = str(eval(st.session_state.expression))
-        except:
-            st.session_state.expression = "Error"
-with col4:
-    if st.button("+"):
-        press("+")
+st.title("🧮 Calculator")
 
-# Clear button
+# Display
+st.text_input("", value=st.session_state.expression, disabled=True)
+
+buttons = [
+    ["7", "8", "9", "/"],
+    ["4", "5", "6", "*"],
+    ["1", "2", "3", "-"],
+    ["0", ".", "=", "+"]
+]
+
+for row in buttons:
+    cols = st.columns(4)
+    for i, button in enumerate(row):
+        with cols[i]:
+            if st.button(button):
+                if button == "=":
+                    try:
+                        st.session_state.expression = str(
+                            eval(st.session_state.expression)
+                        )
+                    except:
+                        st.session_state.expression = "Error"
+                else:
+                    press(button)
+
 if st.button("C", use_container_width=True):
     st.session_state.expression = ""
